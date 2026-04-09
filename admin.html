@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Admin Login</h2>
+
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+
+<h2>Bookings</h2>
+<button onclick="loadData()">Load Bookings</button>
+
+<ul id="list"></ul>
+
+<script>
+let token = "";
+
+async function login() {
+  let res = await fetch("/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      username: username.value,
+      password: password.value
+    })
+  });
+
+  let data = await res.json();
+  token = data.token;
+  alert("Login success");
+}
+
+async function loadData() {
+  let res = await fetch("/bookings", {
+    headers: { "authorization": token }
+  });
+
+  let data = await res.json();
+  list.innerHTML = "";
+
+  data.forEach(b => {
+    let li = document.createElement("li");
+    li.innerText = `${b.name} - ${b.service}`;
+    list.appendChild(li);
+  });
+}
+</script>
+
+</body>
+</html>
